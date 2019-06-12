@@ -24,7 +24,7 @@ public class Menu extends Application {
     	    FXCollections.observableArrayList(
     	        "Venditore",
     	        "Magazziniere",
-    	        "Amministrazione"
+    	        "Amministrativo"
     	    );
     private ComboBox<String> comboBox = new ComboBox<>(options);
 	
@@ -59,6 +59,12 @@ public class Menu extends Application {
         flow.getChildren().add(comboBox);
         flow.getChildren().add(select);
         
+        select.setOnMouseClicked(sel ->{
+        	if (this.comboBox.getValue().equals(this.options.get(0))) {
+        		new SellingView(primaryStage);
+        	}
+    	
+        });
         
         
         flow.setPrefSize(windowSize, windowSize);

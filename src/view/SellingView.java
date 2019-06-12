@@ -1,24 +1,28 @@
 package view;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 
-import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.HPos;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 
-public abstract class SellingView {
+public class SellingView extends QueryViewTemplate {
 
 	public SellingView(Stage primaryStage) {
+		super(primaryStage);
 		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	protected ObservableList<String> getOperations() {
+		ObservableList<String> list = super.getOperations();
+		list.add("Registra vendita");
+		list.add("Registra cliente");
+		return list;
+	}
+
+	@Override
+	protected void operationView(String op) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
