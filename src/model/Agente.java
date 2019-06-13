@@ -1,11 +1,20 @@
 package model;
 
 public class Agente {
+	private String Nome;
 	private String Cognome;
 	private int Partita_IVA;
 	private double Provvigione;
 	private int Telefono;
 	private int Codice_Zona;
+
+	public String getNome(){
+		return Nome;
+	}
+
+	public void setNome(String Nome){
+		this.Nome=Nome;
+	}
 
 	public String getCognome(){
 		return Cognome;

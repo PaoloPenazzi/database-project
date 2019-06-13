@@ -1,13 +1,22 @@
 package model;
 
 public class Dipendente {
+	private int Codice_Dipendente;
 	private String Nome;
 	private String Cognome;
 	private int Stipendio;
 	private String Indirizzo;
 	private int Telefono;
 	private String Ruolo;
-	private String Tipo;
+	private String Ufficio;
+
+	public int getCodice_dipendente(){
+		return Codice_Dipendente;
+	}
+
+	public void setCodice_dipendente(int Codice_Dipendente){
+		this.Codice_Dipendente=Codice_Dipendente;
+	}
 
 	public String getNome(){
 		return Nome;
@@ -57,11 +66,11 @@ public class Dipendente {
 		this.Ruolo=Ruolo;
 	}
 
-	public String getTipo(){
-		return Tipo;
+	public String getUfficio(){
+		return Ufficio;
 	}
 
-	public void setTipo(String Tipo){
-		this.Tipo=Tipo;
+	public void setUfficio(String Ufficio){
+		this.Ufficio=Ufficio;
 	}
 }

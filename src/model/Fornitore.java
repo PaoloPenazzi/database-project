@@ -1,9 +1,18 @@
 package model;
 
 public class Fornitore {
+	private String Nome;
 	private String Indirizzo;
 	private int Telefono;
 	private int Partita_IVA;
+
+	public String getNome(){
+		return Nome;
+	}
+
+	public void setNome(String Nome){
+		this.Nome=Nome;
+	}
 
 	public String getIndirizzo(){
 		return Indirizzo;

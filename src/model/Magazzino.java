@@ -1,10 +1,9 @@
 package model;
 
-public class Cliente {
+public class Magazzino {
 	private String Nome;
-	private String Tipologia;
 	private String Indirizzo;
-	private int Telefono;
+	private int Dimensioni;
 	private int Codice_Zona;
 
 	public String getNome(){
@@ -15,14 +14,6 @@ public class Cliente {
 		this.Nome=Nome;
 	}
 
-	public String getTipologia(){
-		return Tipologia;
-	}
-
-	public void setTipologia(String Tipologia){
-		this.Tipologia=Tipologia;
-	}
-
 	public String getIndirizzo(){
 		return Indirizzo;
 	}
@@ -31,12 +22,12 @@ public class Cliente {
 		this.Indirizzo=Indirizzo;
 	}
 
-	public int getTelefono(){
-		return Telefono;
+	public int getDimensioni(){
+		return Dimensioni;
 	}
 
-	public void setTelefono(int Telefono){
-		this.Telefono=Telefono;
+	public void setDimensioni(int Dimensioni){
+		this.Dimensioni=Dimensioni;
 	}
 
 	public int getCodice_zona(){

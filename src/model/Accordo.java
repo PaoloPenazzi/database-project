@@ -1,36 +1,27 @@
 package model;
 
 public class Accordo {
-	private String Nome;
-	private int Capacita;
-	private String Marca;
+	private int Codice_prodotto;
+	private String Nome_fornitore;
 	private double Prezzo_di_acquisto;
 	private java.util.Date Data_Inizio;
 	private java.util.Date Data_Fine;
 	private int Codice_Dipendente;
 
-	public String getNome(){
-		return Nome;
+	public int getCodice_prodotto(){
+		return Codice_prodotto;
 	}
 
-	public void setNome(String Nome){
-		this.Nome=Nome;
+	public void setCodice_prodotto(int Codice_prodotto){
+		this.Codice_prodotto=Codice_prodotto;
 	}
 
-	public int getCapacita(){
-		return Capacita;
+	public String getNome_fornitore(){
+		return Nome_fornitore;
 	}
 
-	public void setCapacita(int Capacita){
-		this.Capacita=Capacita;
-	}
-
-	public String getMarca(){
-		return Marca;
-	}
-
-	public void setMarca(String Marca){
-		this.Marca=Marca;
+	public void setNome_fornitore(String Nome_fornitore){
+		this.Nome_fornitore=Nome_fornitore;
 	}
 
 	public double getPrezzo_di_acquisto(){
@@ -64,5 +55,4 @@ public class Accordo {
 	public void setCodice_dipendente(int Codice_Dipendente){
 		this.Codice_Dipendente=Codice_Dipendente;
 	}
-
 }
