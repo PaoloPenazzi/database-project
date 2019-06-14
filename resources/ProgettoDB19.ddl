@@ -3,7 +3,7 @@
 -- *--------------------------------------------
 -- * DB-MAIN version: 11.0.1              
 -- * Generator date: Dec  4 2018              
--- * Generation date: Thu Jun 13 15:27:55 2019 
+-- * Generation date: Thu Jun 13 22:52:37 2019 
 -- * LUN file: C:\Users\Davide\eclipse-workspace\DrinkingTeam\resources\ProgettoDB.lun 
 -- * Schema: Drinks&Co.REL/1 
 -- ********************************************* 
@@ -23,10 +23,9 @@ create table ACCORDO (
      Nome_fornitore varchar(20) not null,
      Codice_prodotto int not null,
      Prezzo_di_acquisto decimal(3,2) not null,
-     Data_Inizio date not null,
-     Data_Fine date not null,
+     Data_scadenza date not null,
      Codice_Dipendente int not null,
-     constraint ID_ACCORDO_ID primary key (Nome_fornitore, Codice_prodotto, Data_Inizio));
+     constraint ID_ACCORDO_ID primary key (Nome_fornitore, Codice_prodotto));
 
 create table AGENTE (
      Nome varchar(20) not null,
@@ -190,7 +189,7 @@ alter table ORDINE add constraint FKin_consegna_FK
 
 alter table ORDINE add constraint FKin_base_a_FK
      foreign key (Nome_fornitore, Codice_prodotto)
-     references ACCORDO (Nome_fornitore, Codice_prodotto, Data_Inizio);
+     references ACCORDO (Nome_fornitore, Codice_prodotto);
 
 alter table RECLAMO add constraint FKriguardo_a
      foreign key (Numero_Fattura)
@@ -209,7 +208,7 @@ alter table VENDITA add constraint FKfatta_al_FK
 -- _____________ 
 
 create unique index ID_ACCORDO_IND
-     on ACCORDO (Nome_fornitore, Codice_prodotto, Data_Inizio);
+     on ACCORDO (Nome_fornitore, Codice_prodotto);
 
 create index FKstipulazione_IND
      on ACCORDO (Codice_Dipendente);
