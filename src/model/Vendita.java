@@ -7,8 +7,8 @@ public class Vendita {
 	private double Sconto;
 	private int Codice_prodotto;
 	private String Nome_cliente;
-	private int Partita_IVA;
-	private int Telefono;
+	private String Partita_IVA;
+	private String Telefono;
 
 	public int getNumero_fattura(){
 		return Numero_Fattura;
@@ -58,19 +58,19 @@ public class Vendita {
 		this.Nome_cliente=Nome_cliente;
 	}
 
-	public int getPartita_iva(){
+	public String getPartita_iva(){
 		return Partita_IVA;
 	}
 
-	public void setPartita_iva(int Partita_IVA){
+	public void setPartita_iva(String Partita_IVA){
 		this.Partita_IVA=Partita_IVA;
 	}
 
-	public int getTelefono(){
+	public String getTelefono(){
 		return Telefono;
 	}
 
-	public void setTelefono(int Telefono){
+	public void setTelefono(String Telefono){
 		this.Telefono=Telefono;
 	}
 }

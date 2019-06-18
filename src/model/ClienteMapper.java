@@ -14,10 +14,10 @@ public class ClienteMapper implements RowMapper<Cliente> {
 	@Override
 	public Cliente mapRow(ResultSet rs, int rowNum) throws SQLException {
 		Cliente cliente = new Cliente();
-		cliente.setCodice_zona(rs.getInt("Codice_zona"));
+		cliente.setCodice_Zona(rs.getInt("Codice_Zona"));
 		cliente.setIndirizzo(rs.getString("Indirizzo"));
 		cliente.setNome(rs.getString("Nome"));
-		cliente.setTelefono(rs.getInt("Telefono"));
+		cliente.setTelefono(rs.getString("Telefono"));
 		cliente.setTipologia(rs.getString("Tipologia"));
 		return cliente;
 	}

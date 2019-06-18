@@ -19,10 +19,6 @@ public class SellingView extends QueryViewTemplate {
 		return list;
 	}
 
-	@Override
-	protected void operationView(String op) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 }

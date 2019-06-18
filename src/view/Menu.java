@@ -49,8 +49,7 @@ public class Menu extends Application {
 	    flow.setPrefWrapLength(windowSize); // preferred height = 200
         flow.setVgap(10);
    
-        
-        
+       
         
         comboBox.getSelectionModel().select("-Seleziona il tipo di utente-");
         select = new Button("Ok");
@@ -58,6 +57,7 @@ public class Menu extends Application {
              
         flow.getChildren().add(comboBox);
         flow.getChildren().add(select);
+ 
         
         select.setOnMouseClicked(sel ->{
         	if (this.comboBox.getValue().equals(this.options.get(0))) {

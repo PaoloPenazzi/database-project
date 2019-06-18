@@ -17,9 +17,9 @@ public class AgenteMapper implements RowMapper<Agente> {
 		agente.setCodice_zona(rs.getInt("Codice_zona"));
 		agente.setCognome(rs.getString("Cognome"));
 		agente.setNome(rs.getString("Nome"));
-		agente.setPartita_iva(rs.getInt("Partita_iva"));
+		agente.setPartita_iva(rs.getString("Partita_iva"));
 		agente.setProvvigione(rs.getDouble("Provvigione"));
-		agente.setTelefono(rs.getInt("Telefono"));
+		agente.setTelefono(rs.getString("Telefono"));
 		return agente;
 	}
 }

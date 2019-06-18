@@ -6,7 +6,7 @@ public class Dipendente {
 	private String Cognome;
 	private int Stipendio;
 	private String Indirizzo;
-	private int Telefono;
+	private String Telefono;
 	private String Ruolo;
 	private String Ufficio;
 
@@ -50,11 +50,11 @@ public class Dipendente {
 		this.Indirizzo=Indirizzo;
 	}
 
-	public int getTelefono(){
+	public String getTelefono(){
 		return Telefono;
 	}
 
-	public void setTelefono(int Telefono){
+	public void setTelefono(String Telefono){
 		this.Telefono=Telefono;
 	}
 

@@ -4,7 +4,7 @@ public class Cliente {
 	private String Nome;
 	private String Tipologia;
 	private String Indirizzo;
-	private int Telefono;
+	private String Telefono;
 	private int Codice_Zona;
 
 	public String getNome(){
@@ -31,19 +31,19 @@ public class Cliente {
 		this.Indirizzo=Indirizzo;
 	}
 
-	public int getTelefono(){
+	public String getTelefono(){
 		return Telefono;
 	}
 
-	public void setTelefono(int Telefono){
+	public void setTelefono(String Telefono){
 		this.Telefono=Telefono;
 	}
 
-	public int getCodice_zona(){
+	public int getCodice_Zona(){
 		return Codice_Zona;
 	}
 
-	public void setCodice_zona(int Codice_Zona){
+	public void setCodice_Zona(int Codice_Zona){
 		this.Codice_Zona=Codice_Zona;
 	}
 }

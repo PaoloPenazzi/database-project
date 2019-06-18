@@ -19,7 +19,7 @@ public class DipendenteMapper implements RowMapper<Dipendente> {
 		dipendente.setIndirizzo(rs.getString("Indirizzo"));
 		dipendente.setNome(rs.getString("Nome"));
 		dipendente.setRuolo(rs.getString("Ruolo"));
-		dipendente.setTelefono(rs.getInt("Telefono"));
+		dipendente.setTelefono(rs.getString("Telefono"));
 		dipendente.setStipendio(rs.getInt("Stipendio"));
 		dipendente.setUfficio(rs.getString("Ufficio"));
 		return dipendente;
