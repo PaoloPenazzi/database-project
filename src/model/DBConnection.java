@@ -13,7 +13,7 @@ public final class DBConnection {
 	public static DataSource getMySqlDataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/ciao");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/drinkingteam");
         dataSource.setUsername("prova");
         dataSource.setPassword("prova");
         //impostare accesso in locale da phpmyadmin
