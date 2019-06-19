@@ -49,7 +49,7 @@ create table CONSEGNE (
      Nome_magazzino varchar(20) not null,
      Nome_cliente varchar(25) not null,
      Data_Consegna date not null,
-     constraint ID_CONSEGNA_ID primary key (Numero_Fattura, Nome_magazzino, Nome_cliente, Data_Consegna));
+     constraint ID_CONSEGNA_ID primary key (Numero_Fattura, Nome_magazzino, Nome_cliente));
 
 create table DIPENDENTI (
      Codice_Dipendente int not null AUTO_INCREMENT,
@@ -89,7 +89,7 @@ create table ORDINI (
      Quantita int not null,
      Data_ordine date not null,
      Data_consegna date not null,
-     Nome varchar(20) not null,
+     Magazzino varchar(20) not null,
      Nome_fornitore varchar(20) not null,
      Codice_prodotto int not null,
      constraint ID_ORDINE_ID primary key (Numero_Fattura));
@@ -122,8 +122,7 @@ create table VENDITE (
      Sconto decimal(4,2) not null,
      Codice_prodotto int not null,
      Nome_cliente varchar(25) not null,
-     Partita_IVA varchar(20) not null,
-     Telefono varchar(16) not null,
+     Partita_IVA_agente varchar(20) not null,
      constraint ID_VENDITA_ID primary key (Numero_Fattura));
 
 create table ZONE (
@@ -184,7 +183,7 @@ alter table MAGAZZINI add constraint FKcopertura_FK
      references ZONE (Codice_Zona);
 
 alter table ORDINI add constraint FKin_consegna_FK
-     foreign key (Nome)
+     foreign key (Magazzino)
      references MAGAZZINI (Nome);
 
 alter table ORDINI add constraint FKin_base_a_FK
@@ -202,6 +201,10 @@ alter table VENDITE add constraint FKriferita_FK
 alter table VENDITE add constraint FKfatta_al_FK
      foreign key (Nome_cliente)
      references CLIENTI (Nome);
+
+alter table VENDITE add constraint FKeffettuaFK
+     foreign key (Partita_IVA_agente)
+     references AGENTI (Partita_IVA);
 
 
 -- Index Section
@@ -226,7 +229,7 @@ create index FKappartenenza_IND
      on CLIENTI (Codice_Zona);
 
 create unique index ID_CONSEGNA_IND
-     on CONSEGNE (Numero_Fattura, Nome_magazzino, Nome_cliente, Data_Consegna);
+     on CONSEGNE (Numero_Fattura, Nome_magazzino, Nome_cliente);
 
 create index FKverso_IND
      on CONSEGNE (Nome_cliente);
@@ -244,7 +247,7 @@ create unique index ID_FORNITORE_IND
      on FORNITORI (Nome);
 
 create unique index ID_GIACENZA_IND
-     on GIACENZE (Codice_prodotto, Magazzino, Settore);
+     on GIACENZE (Codice_prodotto, Magazzino);
 
 create index FKpresso_IND
      on GIACENZE (Magazzino);
@@ -268,7 +271,7 @@ create unique index ID_PRODOTTO_IND
      on PRODOTTI (Codice_prodotto);
 
 create unique index ID_RECLAMO_IND
-     on RECLAMI (Numero_Fattura, ID_Reclamo);
+     on RECLAMI (ID_Reclamo);
 
 create unique index ID_UFFICIO_IND
      on UFFICI (Nome);

@@ -3,6 +3,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,8 @@ import javafx.stage.Stage;
 import model.Cliente;
 import model.ClienteMapper;
 import model.Database;
+import model.Giacenza;
+import model.GiacenzaMapper;
 import model.Prodotto;
 import model.ProdottoMapper;
 
@@ -94,10 +98,37 @@ public abstract class QueryViewTemplate {
 		case "Ricerca cliente":
 			this.customerSearch();
 			break;
+		case "Registra prodotto":
+			this.registerProduct();
+			break;
+		case "Registra fornitore":
+			this.registerSupplier();
+			break;
+		case "Visualizza giacenze":
+			this.stockSearch("select * from giacenze where Magazzino='"+this.getWarehouseName()+"'");
+			break;
+		case "Visualizza giacenze sotto la soglia minima":
+			this.stockSearch("select * from giacenze where Magazzino='"+this.getWarehouseName()+"' AND Quantita < Giacenza_minima");
+			break;
+		case "Crea giacenza":
+			this.registerStock();
+			break;
+		case "Aggiorna giacenza":
+			this.updateStock();
+			break;
+		case "Registra ordine":
+			this.registerOrder();
+			break;
+		case "Registra consegna":
+			this.registerDelivery();
+			break;
+		case "Registra vendita":
+			this.registerSell();
+			break;
 		case "Registra cliente":
-			this.insertCustomer();
-			
+			this.registerCustomer();
 		}
+		
 		
 	}
 	
@@ -156,16 +187,16 @@ public abstract class QueryViewTemplate {
 		
 		table.getColumns().addAll(columns);
 		
-		FilteredList<Cliente> filteredProdotti = new FilteredList<>(FXCollections.observableList(this.database.selectFrom("clienti", new ClienteMapper())), p -> true);
+		FilteredList<Cliente> filteredList = new FilteredList<>(FXCollections.observableList(this.database.selectFrom("clienti", new ClienteMapper())), p -> true);
 		//table.setItems(FXCollections.observableList(jdbc.query....));
-		table.setItems(filteredProdotti);
+		table.setItems(filteredList);
 		table.setPrefWidth(windowSize*2);
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
 		TextField search = new TextField("Cerca...");
 		search.setOnKeyReleased(keyEvent ->
         {
-        	filteredProdotti.setPredicate(p -> p.getNome().toLowerCase().contains(search.getText().toLowerCase().trim()));//filter table by name
+        	filteredList.setPredicate(p -> p.getNome().toLowerCase().contains(search.getText().toLowerCase().trim()));//filter table by name
         });
 		
 		FlowPane pane = this.getFlowPane();
@@ -178,12 +209,46 @@ public abstract class QueryViewTemplate {
 		this.getStage().setTitle("Ricerca Prodotto");
 	}
 	
-	protected void insertCustomer() {
+	protected void stockSearch(String SQL) {
+		TableView<Giacenza> table = new TableView<>();
+		List<TableColumn<Giacenza, String>> columns = new ArrayList<>();
+		
+		for (String name : this.database.getColumnNamesOf("giacenze")) {
+			TableColumn<Giacenza, String> column = new TableColumn<>(name);
+			column.setCellValueFactory(new PropertyValueFactory<>(name));
+			columns.add(column);
+		}
+		
+		table.getColumns().addAll(columns);
+		
+		FilteredList<Giacenza> filteredList = new FilteredList<>(FXCollections.observableList(this.database.getJdbc().query(SQL, new GiacenzaMapper())), p -> true);
+		//table.setItems(FXCollections.observableList(jdbc.query....));
+		table.setItems(filteredList);
+		table.setPrefWidth(windowSize*2);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+		TextField search = new TextField("Cerca per codice prodotto...");
+		search.setOnKeyReleased(keyEvent ->
+        {
+        	filteredList.setPredicate(p -> Integer.toString(p.getCodice_prodotto()).contains(search.getText().toLowerCase().trim()));
+        });
+		
+		FlowPane pane = this.getFlowPane();
+		pane.getChildren().add(search);
+		pane.getChildren().add(table);
+		pane.getChildren().add(this.getBackButton());
+		
+		Scene scene = new Scene(pane,windowSize*3, windowSize*2);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Giacenze");
+	}
+	
+	protected void registerCustomer() {
 		FlowPane pane = this.getFlowPane();
 		pane.setOrientation(Orientation.VERTICAL);
 		
 		
-		List<HBox> fields = this.getDefaultInputForm("Clienti");
+		List<HBox> fields = this.getInputForm("Clienti", "---","---","---");
 		pane.getChildren().addAll(fields);
 		
 		Button register = new Button("Registra");
@@ -205,9 +270,249 @@ public abstract class QueryViewTemplate {
 		});
 		
 		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
 		Scene scene = new Scene(pane,windowSize, windowSize/2);
 		this.getStage().setScene(scene);
 		this.getStage().setTitle("Registrazione cliente");
+		
+	}
+	
+	protected void registerSell() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		List<HBox> fields = this.getInputForm("Vendite","Numero","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Vendite(Quantita,Data,Sconto,Codice_prodotto,Nome_cliente,Partita_IVA_agente) values(?,?,?,?,?,?)",
+						Integer.parseInt(((TextField)fields.get(0).getChildren().get(1)).getText()),
+						new SimpleDateFormat("dd/MM/yyyy").parse(((TextField)fields.get(1).getChildren().get(1)).getText()),
+						Double.parseDouble(((TextField)fields.get(2).getChildren().get(1)).getText()),
+						Integer.parseInt(((TextField)fields.get(3).getChildren().get(1)).getText()),
+				        ((TextField)fields.get(4).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(5).getChildren().get(1)).getText()
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			} catch (ParseException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione vendita");
+		
+	}
+	
+	protected void registerProduct() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		
+		List<HBox> fields = this.getInputForm("Prodotti", "Codice_prodotto","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Prodotti(Nome,Capacita,Marca,Prezzo_unitario,Tipologia,Confezione) values(?,?,?,?,?,?)",
+				        ((TextField)fields.get(0).getChildren().get(1)).getText(),
+				        Integer.parseInt(((TextField)fields.get(1).getChildren().get(1)).getText()),
+				        ((TextField)fields.get(2).getChildren().get(1)).getText(),
+				        Double.parseDouble(((TextField)fields.get(3).getChildren().get(1)).getText()),
+				        ((TextField)fields.get(4).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(5).getChildren().get(1)).getText()
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione prodotto");
+		
+	}
+	
+	protected void registerSupplier() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		
+		List<HBox> fields = this.getInputForm("Fornitori", "---","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Fornitori(Nome,Indirizzo,telefono,partita_IVA) values(?,?,?,?)",
+				        ((TextField)fields.get(0).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(1).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(2).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(3).getChildren().get(1)).getText()
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/2);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione fornitore");
+		
+	}
+	
+	
+	protected void registerStock() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		List<HBox> fields = this.getInputForm("Giacenze","Magazzino","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Giacenze(Codice_prodotto,Magazzino,Settore,Quantita,Giacenza_minima) values(?,?,?,?,?)",
+						Integer.parseInt(((TextField)fields.get(0).getChildren().get(1)).getText()),
+						this.getWarehouseName(),
+						Integer.parseInt(((TextField)fields.get(1).getChildren().get(1)).getText()),
+						Integer.parseInt(((TextField)fields.get(2).getChildren().get(1)).getText()),
+						Integer.parseInt(((TextField)fields.get(3).getChildren().get(1)).getText())
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Creazione giacenza");
+		
+	}
+	
+	protected void updateStock() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		List<HBox> fields = this.getInputForm("Giacenze","Magazzino","Settore","Giacenza_minima");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Aggiorna");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("UPDATE Giacenze SET quantita=? WHERE Codice_prodotto=? AND Magazzino=?",
+						Integer.parseInt(((TextField)fields.get(1).getChildren().get(1)).getText()),
+						Integer.parseInt(((TextField)fields.get(0).getChildren().get(1)).getText()),
+						this.getWarehouseName()
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Aggiornamento giacenza");
+		
+	}
+	
+	protected void registerOrder() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		List<HBox> fields = this.getInputForm("Ordini","Numero_Fattura","Magazzino", "---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Ordini(Quantita,Data_ordine,Data_consegna,Magazzino,Nome_fornitore,Codice_prodotto) values(?,?,?,?,?,?)",
+						Integer.parseInt(((TextField)fields.get(0).getChildren().get(1)).getText()),
+						new SimpleDateFormat("dd/MM/yyyy").parse(((TextField)fields.get(1).getChildren().get(1)).getText()),
+						new SimpleDateFormat("dd/MM/yyyy").parse(((TextField)fields.get(2).getChildren().get(1)).getText()),
+						this.getWarehouseName(),
+						((TextField)fields.get(3).getChildren().get(1)).getText(),
+						Integer.parseInt(((TextField)fields.get(4).getChildren().get(1)).getText())
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			} catch (ParseException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione ordine");
+		
+	}
+	
+	protected void registerDelivery() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		List<HBox> fields = this.getInputForm("Consegne","---","---", "Magazzino");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Consegne(Numero_Fattura,Nome_magazzino,Nome_cliente,Data_Consegna) values(?,?,?,?)",
+						Integer.parseInt(((TextField)fields.get(0).getChildren().get(1)).getText()),
+						this.getWarehouseName(),
+						((TextField)fields.get(1).getChildren().get(1)).getText(),
+						new SimpleDateFormat("dd/MM/yyyy").parse(((TextField)fields.get(2).getChildren().get(1)).getText())
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			} catch (ParseException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione consegna");
 		
 	}
 	
@@ -217,6 +522,10 @@ public abstract class QueryViewTemplate {
 	
 	protected Stage getStage() {
 		return this.primaryStage;
+	}
+	
+	protected String getWarehouseName() {
+		return null;
 	}
 	
 	//----------------------------------------------------------------------------------//
@@ -234,19 +543,21 @@ public abstract class QueryViewTemplate {
         return flow;
 	}
 	
-	protected List<HBox> getDefaultInputForm(String tableName){
+	protected List<HBox> getInputForm(String tableName, String forbiddenName, String forbiddenName2, String forbiddenName3){
 		List<HBox> fields = new ArrayList<>();
 		
 		for(String columnName : this.database.getColumnNamesOf(tableName)) {
-			Label text = new Label(String.format("%1$"+40+ "s", columnName));
-			TextField field = new TextField(columnName);
-			if(columnName.contains("Data")) {
-				field.setText("dd/MM/yyyy");
+			if(!columnName.contains(forbiddenName) && !columnName.contains(forbiddenName2) && !columnName.contains(forbiddenName3)) {
+				Label text = new Label(String.format("%1$"+40+ "s", columnName));
+				TextField field = new TextField(columnName);
+				if(columnName.contains("Data")) {
+					field.setText("dd/MM/yyyy");
+				}
+				HBox box = new HBox();
+				box.getChildren().addAll(text, field);
+				box.setSpacing(5);
+				fields.add(box);
 			}
-			HBox box = new HBox();
-			box.getChildren().addAll(text, field);
-			box.setSpacing(5);
-			fields.add(box);
 		}
 		return fields;
 	}
@@ -274,7 +585,7 @@ public abstract class QueryViewTemplate {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setTitle("Risultato dell'operazione");
 		alert.setHeaderText("Si è verificato un errore");
-		alert.setContentText("Could not find file blabla.txt!");
+		alert.setContentText("Di seguito informazioni dettagliate su cosa è andato storto.");
 
 		// Create expandable Exception.
 		StringWriter sw = new StringWriter();

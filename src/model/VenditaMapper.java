@@ -18,7 +18,7 @@ public class VenditaMapper implements RowMapper<Vendita> {
 		vendita.setData(rs.getDate("Data"));
 		vendita.setNome_cliente(rs.getString("Nome_Cliente"));
 		vendita.setNumero_fattura(rs.getInt("Numero_fattura"));
-		vendita.setPartita_iva(rs.getString("Partita_iva"));
+		vendita.setPartita_IVA_agente(rs.getString("Partita_IVA_agente"));
 		vendita.setQuantita(rs.getInt("Quantita"));
 		vendita.setSconto(rs.getDouble("Sconto"));
 		vendita.setTelefono(rs.getString("Telefono"));

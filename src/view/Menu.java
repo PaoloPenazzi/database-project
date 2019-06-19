@@ -63,6 +63,12 @@ public class Menu extends Application {
         	if (this.comboBox.getValue().equals(this.options.get(0))) {
         		new SellingView(primaryStage);
         	}
+        	if (this.comboBox.getValue().equals(this.options.get(1))) {
+        		new WarehouseView(primaryStage);
+        	}
+        	if (this.comboBox.getValue().equals(this.options.get(2))) {
+        		new AdministrationView(primaryStage);
+        	}
     	
         });
         

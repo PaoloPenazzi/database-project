@@ -7,7 +7,7 @@ public class Vendita {
 	private double Sconto;
 	private int Codice_prodotto;
 	private String Nome_cliente;
-	private String Partita_IVA;
+	private String Partita_IVA_agente;
 	private String Telefono;
 
 	public int getNumero_fattura(){
@@ -58,12 +58,12 @@ public class Vendita {
 		this.Nome_cliente=Nome_cliente;
 	}
 
-	public String getPartita_iva(){
-		return Partita_IVA;
+	public String getPartita_IVA_agente(){
+		return Partita_IVA_agente;
 	}
 
-	public void setPartita_iva(String Partita_IVA){
-		this.Partita_IVA=Partita_IVA;
+	public void setPartita_IVA_agente(String Partita_IVA){
+		this.Partita_IVA_agente=Partita_IVA;
 	}
 
 	public String getTelefono(){
