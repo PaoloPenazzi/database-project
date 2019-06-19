@@ -4,8 +4,7 @@ public class Accordo {
 	private int Codice_prodotto;
 	private String Nome_fornitore;
 	private double Prezzo_di_acquisto;
-	private java.util.Date Data_Inizio;
-	private java.util.Date Data_Fine;
+	private java.util.Date Data_Scadenza;
 	private int Codice_Dipendente;
 
 	public int getCodice_prodotto(){
@@ -32,20 +31,12 @@ public class Accordo {
 		this.Prezzo_di_acquisto=Prezzo_di_acquisto;
 	}
 
-	public java.util.Date getData_inizio(){
-		return Data_Inizio;
+	public java.util.Date getData_Scadenza(){
+		return Data_Scadenza;
 	}
 
-	public void setData_inizio(java.util.Date Data_Inizio){
-		this.Data_Inizio=Data_Inizio;
-	}
-
-	public java.util.Date getData_fine(){
-		return Data_Fine;
-	}
-
-	public void setData_fine(java.util.Date Data_Fine){
-		this.Data_Fine=Data_Fine;
+	public void setData_Scadenza(java.util.Date Data_Scadenza){
+		this.Data_Scadenza=Data_Scadenza;
 	}
 
 	public int getCodice_dipendente(){

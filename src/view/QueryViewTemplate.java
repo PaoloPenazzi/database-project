@@ -33,9 +33,15 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import model.Accordo;
+import model.AccordoMapper;
+import model.Agente;
+import model.AgenteMapper;
 import model.Cliente;
 import model.ClienteMapper;
 import model.Database;
+import model.Dipendente;
+import model.DipendenteMapper;
 import model.Giacenza;
 import model.GiacenzaMapper;
 import model.Prodotto;
@@ -104,6 +110,27 @@ public abstract class QueryViewTemplate {
 		case "Registra fornitore":
 			this.registerSupplier();
 			break;
+		case "Registra accordo":
+			this.registerAgreement();
+			break;
+		case "Registra dipendente":
+			this.registerEmployee();
+			break;
+		case "Registra agente":
+			this.registerAgent();
+			break;
+		case "Aggiorna accordo":
+			this.updateAgreement();
+			break;
+		case "Ricerca accordo":
+			this.agreementSearch();
+			break;
+		case "Visualizza dipendenti":
+			this.employeeSearch();
+			break;
+		case "Visualizza agenti":
+			this.agentSearch();
+			break;
 		case "Visualizza giacenze":
 			this.stockSearch("select * from giacenze where Magazzino='"+this.getWarehouseName()+"'");
 			break;
@@ -127,6 +154,9 @@ public abstract class QueryViewTemplate {
 			break;
 		case "Registra cliente":
 			this.registerCustomer();
+			break;
+		case "Calcola provvigione":
+			this.computeRemuneration();
 		}
 		
 		
@@ -152,7 +182,6 @@ public abstract class QueryViewTemplate {
 		table.getColumns().addAll(columns);
 		
 		FilteredList<Prodotto> filteredProdotti = new FilteredList<>(FXCollections.observableList(this.database.selectFrom("prodotti", new ProdottoMapper())), p -> true);
-		//table.setItems(FXCollections.observableList(jdbc.query....));
 		table.setItems(filteredProdotti);
 		table.setPrefWidth(windowSize*2);
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -160,7 +189,7 @@ public abstract class QueryViewTemplate {
 		TextField search = new TextField("Cerca...");
 		search.setOnKeyReleased(keyEvent ->
         {
-        	filteredProdotti.setPredicate(p -> p.getNome().toLowerCase().contains(search.getText().toLowerCase().trim()));//filter table by name
+        	filteredProdotti.setPredicate(p -> p.getNome().toLowerCase().contains(search.getText().toLowerCase().trim()));
         });
 		
 		FlowPane pane = this.getFlowPane();
@@ -188,15 +217,14 @@ public abstract class QueryViewTemplate {
 		table.getColumns().addAll(columns);
 		
 		FilteredList<Cliente> filteredList = new FilteredList<>(FXCollections.observableList(this.database.selectFrom("clienti", new ClienteMapper())), p -> true);
-		//table.setItems(FXCollections.observableList(jdbc.query....));
 		table.setItems(filteredList);
 		table.setPrefWidth(windowSize*2);
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		
-		TextField search = new TextField("Cerca...");
+		TextField search = new TextField("Cerca per nome...");
 		search.setOnKeyReleased(keyEvent ->
         {
-        	filteredList.setPredicate(p -> p.getNome().toLowerCase().contains(search.getText().toLowerCase().trim()));//filter table by name
+        	filteredList.setPredicate(p -> p.getNome().toLowerCase().contains(search.getText().toLowerCase().trim()));
         });
 		
 		FlowPane pane = this.getFlowPane();
@@ -222,7 +250,6 @@ public abstract class QueryViewTemplate {
 		table.getColumns().addAll(columns);
 		
 		FilteredList<Giacenza> filteredList = new FilteredList<>(FXCollections.observableList(this.database.getJdbc().query(SQL, new GiacenzaMapper())), p -> true);
-		//table.setItems(FXCollections.observableList(jdbc.query....));
 		table.setItems(filteredList);
 		table.setPrefWidth(windowSize*2);
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -242,6 +269,108 @@ public abstract class QueryViewTemplate {
 		this.getStage().setScene(scene);
 		this.getStage().setTitle("Giacenze");
 	}
+	
+	protected void agreementSearch() {
+		TableView<Accordo> table = new TableView<>();
+		List<TableColumn<Accordo, String>> columns = new ArrayList<>();
+		
+		for (String name : this.database.getColumnNamesOf("accordi")) {
+			TableColumn<Accordo, String> column = new TableColumn<>(name);
+			column.setCellValueFactory(new PropertyValueFactory<>(name));
+			columns.add(column);
+		}
+		
+		table.getColumns().addAll(columns);
+		
+		FilteredList<Accordo> filteredList = new FilteredList<>(FXCollections.observableList(this.database.selectFrom("accordi", new AccordoMapper())), p -> true);
+		table.setItems(filteredList);
+		table.setPrefWidth(windowSize*2);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+		TextField search = new TextField("Cerca per codice prodotto...");
+		search.setOnKeyReleased(keyEvent ->
+        {
+        	filteredList.setPredicate(p -> Integer.toString(p.getCodice_prodotto()).contains(search.getText().toLowerCase().trim()));
+        });
+		
+		FlowPane pane = this.getFlowPane();
+		pane.getChildren().add(search);
+		pane.getChildren().add(table);
+		pane.getChildren().add(this.getBackButton());
+		
+		Scene scene = new Scene(pane,windowSize*3, windowSize*2);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Ricerca accordo");
+	}
+	
+	
+	protected void employeeSearch() {
+		TableView<Dipendente> table = new TableView<>();
+		List<TableColumn<Dipendente, String>> columns = new ArrayList<>();
+		
+		for (String name : this.database.getColumnNamesOf("dipendenti")) {
+			TableColumn<Dipendente, String> column = new TableColumn<>(name);
+			column.setCellValueFactory(new PropertyValueFactory<>(name));
+			columns.add(column);
+		}
+		
+		table.getColumns().addAll(columns);
+		
+		FilteredList<Dipendente> filteredList = new FilteredList<>(FXCollections.observableList(this.database.selectFrom("dipendenti", new DipendenteMapper())), p -> true);
+		table.setItems(filteredList);
+		table.setPrefWidth(windowSize*2);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+		TextField search = new TextField("Cerca per cognome...");
+		search.setOnKeyReleased(keyEvent ->
+        {
+        	filteredList.setPredicate(p -> p.getCognome().contains(search.getText().toLowerCase().trim()));
+        });
+		
+		FlowPane pane = this.getFlowPane();
+		pane.getChildren().add(search);
+		pane.getChildren().add(table);
+		pane.getChildren().add(this.getBackButton());
+		
+		Scene scene = new Scene(pane,windowSize*3, windowSize*2);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Visualizza dipendenti");
+	}
+	
+	
+	protected void agentSearch() {
+		TableView<Agente> table = new TableView<>();
+		List<TableColumn<Agente, String>> columns = new ArrayList<>();
+		
+		for (String name : this.database.getColumnNamesOf("agenti")) {
+			TableColumn<Agente, String> column = new TableColumn<>(name);
+			column.setCellValueFactory(new PropertyValueFactory<>(name));
+			columns.add(column);
+		}
+		
+		table.getColumns().addAll(columns);
+		
+		FilteredList<Agente> filteredList = new FilteredList<>(FXCollections.observableList(this.database.selectFrom("agenti", new AgenteMapper())), p -> true);
+		table.setItems(filteredList);
+		table.setPrefWidth(windowSize*2);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		
+		TextField search = new TextField("Cerca per cognome...");
+		search.setOnKeyReleased(keyEvent ->
+        {
+        	filteredList.setPredicate(p -> p.getCognome().contains(search.getText().toLowerCase().trim()));
+        });
+		
+		FlowPane pane = this.getFlowPane();
+		pane.getChildren().add(search);
+		pane.getChildren().add(table);
+		pane.getChildren().add(this.getBackButton());
+		
+		Scene scene = new Scene(pane,windowSize*3, windowSize*2);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Visualizza dipendenti");
+	}
+	
 	
 	protected void registerCustomer() {
 		FlowPane pane = this.getFlowPane();
@@ -381,6 +510,115 @@ public abstract class QueryViewTemplate {
 		
 	}
 	
+	protected void registerAgreement() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		List<HBox> fields = this.getInputForm("Accordi","---","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Accordi(Nome_fornitore,Codice_prodotto,Prezzo_di_acquisto,Data_scadenza,Codice_Dipendente) values(?,?,?,?,?)",
+						((TextField)fields.get(0).getChildren().get(1)).getText(),
+						Integer.parseInt(((TextField)fields.get(1).getChildren().get(1)).getText()),
+						Double.parseDouble(((TextField)fields.get(2).getChildren().get(1)).getText()),
+						new SimpleDateFormat("dd/MM/yyyy").parse(((TextField)fields.get(3).getChildren().get(1)).getText()),						
+						Integer.parseInt(((TextField)fields.get(4).getChildren().get(1)).getText())				       
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			} catch (ParseException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione accordo");
+		
+	}
+	
+	
+	protected void registerEmployee() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		
+		List<HBox> fields = this.getInputForm("Dipendenti", "Codice_Dipendente","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Dipendenti(Nome,Cognome,Stipendio,Indirizzo,telefono,Ruolo,Ufficio) values(?,?,?,?,?,?,?)",
+				        ((TextField)fields.get(0).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(1).getChildren().get(1)).getText(),
+				        Integer.parseInt(((TextField)fields.get(2).getChildren().get(1)).getText()),
+				        ((TextField)fields.get(3).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(4).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(5).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(6).getChildren().get(1)).getText()
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione dipendente");
+		
+	}
+	
+	protected void registerAgent() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		
+		List<HBox> fields = this.getInputForm("Agenti", "---","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Registra");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("INSERT INTO Agenti(Nome,Cognome,partita_IVA,Provvigione,telefono,Codice_Zona) values(?,?,?,?,?,?)",
+				        ((TextField)fields.get(0).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(1).getChildren().get(1)).getText(),
+				        ((TextField)fields.get(2).getChildren().get(1)).getText(),
+				        Double.parseDouble(((TextField)fields.get(3).getChildren().get(1)).getText()),
+				        ((TextField)fields.get(4).getChildren().get(1)).getText(),
+				        Integer.parseInt(((TextField)fields.get(5).getChildren().get(1)).getText())
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Registrazione agente");
+		
+	}
+	
+	
+	
 	
 	protected void registerStock() {
 		FlowPane pane = this.getFlowPane();
@@ -443,6 +681,40 @@ public abstract class QueryViewTemplate {
 		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
 		this.getStage().setScene(scene);
 		this.getStage().setTitle("Aggiornamento giacenza");
+	}
+	
+	protected void updateAgreement() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		List<HBox> fields = this.getInputForm("Accordi","---","---","---");
+		pane.getChildren().addAll(fields);
+		
+		Button register = new Button("Aggiorna");
+		register.setOnMouseClicked(p -> {
+			try {
+				this.database.getJdbc().update("UPDATE Accordi SET Data_Scadenza=?, Prezzo_di_acquisto=?, Codice_Dipendente=?  WHERE Codice_prodotto=? AND Nome_fornitore=?",
+						new SimpleDateFormat("dd/MM/yyyy").parse(((TextField)fields.get(3).getChildren().get(1)).getText()),				
+						Double.parseDouble(((TextField)fields.get(2).getChildren().get(1)).getText()),
+						Integer.parseInt(((TextField)fields.get(4).getChildren().get(1)).getText()),
+						Integer.parseInt(((TextField)fields.get(1).getChildren().get(1)).getText()),			
+						((TextField)fields.get(0).getChildren().get(1)).getText()
+						);
+				this.successPopup();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			} catch (ParseException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Aggiornamento accordo");
 		
 	}
 	
@@ -515,6 +787,50 @@ public abstract class QueryViewTemplate {
 		this.getStage().setTitle("Registrazione consegna");
 		
 	}
+	
+	protected void computeRemuneration() {
+		FlowPane pane = this.getFlowPane();
+		pane.setOrientation(Orientation.VERTICAL);
+		
+		HBox box = new HBox();
+		Label text = new Label("Inserire partita IVA dell'agente:");
+		TextField field = new TextField("Partita IVA");
+		box.getChildren().addAll(text,field);
+		
+		pane.getChildren().add(box);
+		
+		Button register = new Button("Calcola");
+		register.setOnMouseClicked(p -> {
+			try {
+									
+						
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("Risultato dell'operazione");
+				alert.setHeaderText(null);
+				alert.setContentText("Importo dovuto all'agente: "+this.database.getJdbc().queryForObject("select p.prezzo_unitario*v.quantita*a.Provvigione as totale" + 
+						" from prodotti p, vendite v, agenti a" + 
+						" where v.partita_IVA_agente = a.partita_IVA" + 
+						" and p.Codice_prodotto = v.Codice_prodotto" + 
+						" and a.partita_IVA = '"+field.getText()+"'", String.class)+ " €"	);
+				alert.initOwner(this.primaryStage);
+				alert.showAndWait();
+			} catch (DataAccessException e) {
+				this.exceptionPopup(e);
+			} catch (NumberFormatException e) {
+				this.exceptionPopup(e);
+			}
+		});
+		
+		pane.getChildren().add(register);
+		pane.getChildren().add(this.getBackButton());
+		Scene scene = new Scene(pane,windowSize, windowSize/1.5);
+		this.getStage().setScene(scene);
+		this.getStage().setTitle("Calcolo provvigione");
+		
+	}
+	
+	
+	
 	
 	protected Database getDatabase() {
 		return this.database;

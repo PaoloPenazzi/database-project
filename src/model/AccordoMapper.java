@@ -16,8 +16,7 @@ public class AccordoMapper implements RowMapper<Accordo> {
 		Accordo accordo = new Accordo();
 		accordo.setCodice_dipendente(rs.getInt("Codice_dipendente"));
 		accordo.setCodice_prodotto(rs.getInt("Codice_prodotto"));
-		accordo.setData_fine(rs.getDate("Data_fine"));
-		accordo.setData_inizio(rs.getDate("Data_inizio"));
+		accordo.setData_Scadenza(rs.getDate("Data_Scadenza"));
 		accordo.setNome_fornitore(rs.getString("Nome_fornitore"));
 		accordo.setPrezzo_di_acquisto(rs.getDouble("Prezzo_di_acquisto"));
 		return accordo;

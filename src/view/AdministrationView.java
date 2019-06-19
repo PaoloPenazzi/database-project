@@ -15,10 +15,13 @@ public class AdministrationView extends QueryViewTemplate {
 		list.add("Registra prodotto");
 		list.add("Registra fornitore");
 		list.add("Registra accordo");
+		list.add("Registra dipendente");
+		list.add("Registra agente");
 		list.add("Aggiorna accordo");
 		list.add("Ricerca accordo");
 		list.add("Visualizza agenti");
 		list.add("Visualizza dipendenti");
+		list.add("Calcola provvigione");
 		return list;
 	}
 

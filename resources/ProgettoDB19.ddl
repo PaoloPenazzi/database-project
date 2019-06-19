@@ -20,7 +20,7 @@ use ciao;
 -- _____________ 
 
 create table ACCORDI (
-     Nome_fornitore varchar(20) not null,
+     Nome_fornitore varchar(50) not null,
      Codice_prodotto int not null,
      Prezzo_di_acquisto decimal(4,2) not null,
      Data_scadenza date not null,
@@ -63,7 +63,7 @@ create table DIPENDENTI (
      constraint ID_DIPENDENTE_ID primary key (Codice_Dipendente));
 
 create table FORNITORI (
-     Nome varchar(20) not null,
+     Nome varchar(50) not null,
      Indirizzo varchar(40) not null,
      Telefono varchar(16) not null,
      Partita_IVA varchar(20) not null,
@@ -90,7 +90,7 @@ create table ORDINI (
      Data_ordine date not null,
      Data_consegna date not null,
      Magazzino varchar(20) not null,
-     Nome_fornitore varchar(20) not null,
+     Nome_fornitore varchar(50) not null,
      Codice_prodotto int not null,
      constraint ID_ORDINE_ID primary key (Numero_Fattura));
 
