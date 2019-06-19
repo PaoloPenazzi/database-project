@@ -61,12 +61,15 @@ public class Menu extends Application {
         
         select.setOnMouseClicked(sel ->{
         	if (this.comboBox.getValue().equals(this.options.get(0))) {
+        		primaryStage.setTitle("Venditore");
         		new SellingView(primaryStage);
         	}
         	if (this.comboBox.getValue().equals(this.options.get(1))) {
+        		primaryStage.setTitle("Magazziniere");
         		new WarehouseView(primaryStage);
         	}
         	if (this.comboBox.getValue().equals(this.options.get(2))) {
+        		primaryStage.setTitle("Amministrativo");
         		new AdministrationView(primaryStage);
         	}
     	

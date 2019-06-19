@@ -40,9 +40,9 @@ public class WarehouseView extends QueryViewTemplate {
 		}
 
 		ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
-		dialog.setTitle("Choice Dialog");
-		dialog.setHeaderText("Look, a Choice Dialog");
-		dialog.setContentText("Choose your letter:");
+		dialog.setTitle("");
+		dialog.setHeaderText("A quale magazzino appartieni?");
+		dialog.setContentText("Seleziona un magazzino:");
 		dialog.initOwner(this.getStage());
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()){
